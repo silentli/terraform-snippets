@@ -1,0 +1,13 @@
+# Bootstrap Layer - Dev Environment
+
+# Project Configuration
+project_name = "terraform-snippets"
+environment  = "dev"
+
+# GitHub Configuration
+github_org  = "silentli"
+github_repo = "terraform-snippets"
+
+# S3 Backend Configuration
+bucket_name = "terraform-snippets-state-dev"
+region      = "us-east-1"
