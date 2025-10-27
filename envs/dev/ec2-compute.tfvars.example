@@ -1,0 +1,16 @@
+# Compute Layer - Dev Environment
+# EC2 instances and compute resources
+
+# Project Configuration
+project_name = "terraform-snippets"
+environment  = "dev"
+
+# Compute Configuration
+ami_id         = "ami-0c02fb55956c7d316"  # Amazon Linux 2 AMI
+instance_type  = "t2.micro"
+key_name       = "your-key-pair-name"
+instance_name  = "terraform-instance-dev"
+
+# Network State (from bootstrap output)
+network_state_bucket = "terraform-snippets-state-dev"
+aws_region          = "us-east-1"
