@@ -1,0 +1,13 @@
+name: Terraform Fmt
+description: Run terraform fmt -check -recursive in a directory
+inputs:
+  working_directory:
+    description: Directory to run terraform fmt
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: terraform fmt
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: terraform fmt -check -recursive
