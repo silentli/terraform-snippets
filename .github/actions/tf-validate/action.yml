@@ -1,0 +1,13 @@
+name: Terraform Validate
+description: Run terraform validate in a directory (assumes init already ran)
+inputs:
+  working_directory:
+    description: Directory to run terraform validate
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: terraform validate
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: terraform validate
