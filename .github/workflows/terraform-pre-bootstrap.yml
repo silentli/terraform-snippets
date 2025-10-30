@@ -1,0 +1,106 @@
+name: 'Terraform Pre-Bootstrap (Initial Setup)'
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  validate:
+    name: 'Validate Pre-Bootstrap Targets'
+    runs-on: ubuntu-latest
+    if: github.actor == github.repository_owner
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials (User Credentials)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.10.0
+
+    - name: Terraform Init
+      uses: ./.github/actions/tf-init
+      with:
+        working_directory: 00-bootstrap
+
+    - name: Terraform Targeted Plan
+      uses: ./.github/actions/tf-plan
+      with:
+        working_directory: 00-bootstrap
+        varfile: ../envs/${{ github.event.inputs.environment || 'dev' }}/bootstrap.tfvars
+        out: tfplan
+        extra_args: "-target=module.oidc -target=module.iam_roles.aws_iam_role_policy_attachment.terraform_bootstrap"
+
+    - name: Upload Plan Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: prebootstrap-tfplan-${{ github.event.inputs.environment || 'dev' }}
+        path: 00-bootstrap/tfplan
+        retention-days: 5
+
+  apply:
+    name: 'Apply Pre-Bootstrap Targets'
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.event_name == 'workflow_dispatch' && github.actor == github.repository_owner
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials (User Credentials)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.10.0
+
+    - name: Download Plan Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: prebootstrap-tfplan-${{ github.event.inputs.environment || 'dev' }}
+        path: 00-bootstrap/
+
+    - name: Terraform Init
+      uses: ./.github/actions/tf-init
+      with:
+        working_directory: 00-bootstrap
+
+    - name: Terraform Apply
+      uses: ./.github/actions/tf-apply
+      with:
+        working_directory: 00-bootstrap
+        plan_file: tfplan
+        auto_approve: 'true'
+
+    - name: Output Bootstrap Role ARN
+      id: outputs
+      run: |
+        echo "role_arn=$(terraform output -raw terraform_bootstrap_role_arn)" >> $GITHUB_OUTPUT
+      working-directory: ./00-bootstrap
