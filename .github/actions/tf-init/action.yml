@@ -1,0 +1,13 @@
+name: Terraform Init
+description: Run terraform init in a directory
+inputs:
+  working_directory:
+    description: Directory to run terraform init
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: terraform init
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: terraform init
