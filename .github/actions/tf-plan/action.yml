@@ -1,0 +1,30 @@
+name: Terraform Plan
+description: Run terraform plan with optional var-file and output plan file
+inputs:
+  working_directory:
+    description: Directory to run terraform plan
+    required: true
+  varfile:
+    description: Optional path to *.tfvars (relative to repo root)
+    required: false
+  out:
+    description: Plan file name to write
+    required: false
+    default: tfplan
+  extra_args:
+    description: Extra arguments appended to plan command (space-separated)
+    required: false
+runs:
+  using: composite
+  steps:
+    - name: terraform plan
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        set -euo pipefail
+        EXTRA_ARGS="${{ inputs.extra_args }}"
+        if [ -n "${{ inputs.varfile }}" ]; then
+          terraform plan -var-file="${{ inputs.varfile }}" -out="${{ inputs.out }}" ${EXTRA_ARGS:+$EXTRA_ARGS}
+        else
+          terraform plan -out="${{ inputs.out }}" ${EXTRA_ARGS:+$EXTRA_ARGS}
+        fi
