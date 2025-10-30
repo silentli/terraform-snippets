@@ -1,0 +1,41 @@
+name: Terraform Apply
+description: Run terraform apply on a plan file
+inputs:
+  working_directory:
+    description: Directory to run terraform apply
+    required: true
+  plan_file:
+    description: Plan file to apply
+    required: false
+    default: tfplan
+  auto_approve:
+    description: Auto approve apply (true/false)
+    required: false
+    default: 'false'
+  extra_args:
+    description: Extra arguments appended to apply command (space-separated)
+    required: false
+outputs:
+  outputs_json:
+    description: "Terraform output values in JSON format"
+runs:
+  using: composite
+  steps:
+    - name: terraform apply
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        set -euo pipefail
+        APPROVE_FLAG=""
+        if [ "${{ inputs.auto_approve }}" = "true" ]; then
+          APPROVE_FLAG="-auto-approve"
+        fi
+        EXTRA_ARGS="${{ inputs.extra_args }}"
+        terraform apply ${APPROVE_FLAG} "${{ inputs.plan_file }}" ${EXTRA_ARGS:+$EXTRA_ARGS}
+    - name: Capture Outputs
+      id: tfoutputs
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        terraform output -json > tf_output.json
+        echo "outputs_json=$(cat tf_output.json)" >> $GITHUB_OUTPUT
