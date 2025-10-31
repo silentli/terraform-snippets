@@ -22,33 +22,38 @@ resource "aws_security_group" "ec2_sg" {
   description = "Security group for EC2"
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
 
-  ingress {
-    description = "Allow SSH"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    description = "Allow all outbound"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   tags = {
     Name = "${var.project_name}-sg"
   }
 }
 
+# Ingress Rule - Allow SSH
+resource "aws_vpc_security_group_ingress_rule" "ssh" {
+  security_group_id = aws_security_group.ec2_sg.id
+  description       = "Allow SSH"
+  from_port         = 22
+  to_port           = 22
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
+# Egress Rule - Allow all outbound
+resource "aws_vpc_security_group_egress_rule" "all_outbound" {
+  security_group_id = aws_security_group.ec2_sg.id
+  description       = "Allow all outbound"
+  from_port         = 0
+  to_port           = 0
+  ip_protocol       = "-1"
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
 # EC2 Instance Resource
 resource "aws_instance" "this" {
-  ami           = var.ami_id
-  instance_type = var.instance_type
-  key_name      = var.key_name
-  subnet_id     = data.terraform_remote_state.network.outputs.public_subnet_id
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  subnet_id              = data.terraform_remote_state.network.outputs.public_subnet_id
+  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
 
   tags = {
     Name = var.instance_name
