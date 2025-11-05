@@ -42,3 +42,23 @@ variable "aws_region" {
   type        = string
   default     = "us-east-1"
 }
+
+# Policy usage:
+# - Set `enable_policies = true` to attach policies to the EC2 role
+# - Provide `policy_arns` as a map where the key is a friendly name
+#   and the value is the policy ARN
+#   Example:
+#   policy_arns = {
+#     ssm = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+#   }
+variable "enable_policies" {
+  description = "Whether to attach IAM managed policies to the EC2 role"
+  type        = bool
+  default     = false
+}
+
+variable "policy_arns" {
+  description = "Map of IAM policy ARNs to attach to the EC2 role. Key is used for resource naming, value is the policy ARN."
+  type        = map(string)
+  default     = {}
+}

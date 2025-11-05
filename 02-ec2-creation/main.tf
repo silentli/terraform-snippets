@@ -16,6 +16,16 @@ data "terraform_remote_state" "network" {
   }
 }
 
+# IAM Role and Instance Profile for EC2
+module "iam_ec2" {
+  source = "../modules/iam-ec2"
+
+  project_name    = var.project_name
+  environment     = var.environment
+  enable_policies = var.enable_policies
+  policy_arns     = var.policy_arns
+}
+
 # Security Group
 resource "aws_security_group" "ec2_sg" {
   name        = "${var.project_name}-sg"
@@ -54,6 +64,7 @@ resource "aws_instance" "this" {
   key_name               = var.key_name
   subnet_id              = data.terraform_remote_state.network.outputs.public_subnet_id
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
+  iam_instance_profile   = module.iam_ec2.instance_profile_name
 
   tags = {
     Name = var.instance_name
