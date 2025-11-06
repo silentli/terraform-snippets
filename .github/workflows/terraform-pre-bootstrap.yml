@@ -1,5 +1,8 @@
 name: 'Terraform Pre-Bootstrap (Initial Setup)'
 
+# Note: Using repository-level variables (vars.TERRAFORM_VERSION, vars.ARTIFACT_RETENTION_DAYS)
+# with fallbacks defined in the workflow steps
+
 on:
   workflow_dispatch:
     inputs:
@@ -34,9 +37,9 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
+      uses: ./.github/actions/tf-setup
       with:
-        terraform_version: 1.10.0
+        terraform_version: ${{ vars.TERRAFORM_VERSION || '1.10.0' }}
 
     - name: Terraform Init
       uses: ./.github/actions/tf-init
@@ -56,7 +59,7 @@ jobs:
       with:
         name: prebootstrap-tfplan-${{ github.event.inputs.environment || 'dev' }}
         path: 00-bootstrap/tfplan
-        retention-days: 5
+        retention-days: ${{ vars.ARTIFACT_RETENTION_DAYS || 5 }}
 
   apply:
     name: 'Apply Pre-Bootstrap Targets'
@@ -77,9 +80,9 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
+      uses: ./.github/actions/tf-setup
       with:
-        terraform_version: 1.10.0
+        terraform_version: ${{ vars.TERRAFORM_VERSION || '1.10.0' }}
 
     - name: Download Plan Artifact
       uses: actions/download-artifact@v4
