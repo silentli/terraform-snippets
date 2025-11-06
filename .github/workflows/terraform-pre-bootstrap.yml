@@ -30,6 +30,13 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Validate Required Secrets
+      run: |
+        if [ -z "${{ secrets.AWS_REGION }}" ] || [ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ] || [ -z "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ]; then
+          echo "Error: Required secrets are missing (AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)"
+          exit 1
+        fi
+
     - name: Configure AWS credentials (User Credentials)
       uses: aws-actions/configure-aws-credentials@v4
       with:
