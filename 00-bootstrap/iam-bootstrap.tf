@@ -82,9 +82,12 @@ resource "aws_iam_role" "terraform_bootstrap" {
 
   assume_role_policy = data.aws_iam_policy_document.oidc_assume_role.json
 
-  tags = {
-    Name = "terraform-bootstrap-role"
-  }
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "terraform-bootstrap-role"
+    }
+  )
 }
 
 # Bootstrap policy

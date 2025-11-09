@@ -15,4 +15,5 @@ module "network" {
   public_subnet_cidr  = var.public_subnet_cidr
   private_subnet_cidr = var.private_subnet_cidr
   availability_zone   = var.availability_zone
+  common_tags         = local.common_tags
 }

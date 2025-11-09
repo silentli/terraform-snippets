@@ -24,6 +24,7 @@ module "iam_ec2" {
   environment     = var.environment
   enable_policies = var.enable_policies
   policy_arns     = var.policy_arns
+  common_tags     = local.common_tags
 }
 
 # Security Group
@@ -32,9 +33,12 @@ resource "aws_security_group" "ec2_sg" {
   description = "Security group for EC2"
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
 
-  tags = {
-    Name = "${var.project_name}-sg"
-  }
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.project_name}-sg"
+    }
+  )
 }
 
 # Ingress Rule - Allow SSH
@@ -66,7 +70,10 @@ resource "aws_instance" "this" {
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
   iam_instance_profile   = module.iam_ec2.instance_profile_name
 
-  tags = {
-    Name = var.instance_name
-  }
+  tags = merge(
+    local.common_tags,
+    {
+      Name = var.instance_name
+    }
+  )
 }

@@ -80,9 +80,12 @@ resource "aws_iam_role" "terraform_compute" {
   name               = "${var.project_name}-terraform-compute-${var.environment}"
   assume_role_policy = data.aws_iam_policy_document.oidc_assume_role.json
 
-  tags = {
-    Name = "terraform-compute-role"
-  }
+  tags = merge(
+    var.common_tags,
+    {
+      Name = "terraform-compute-role"
+    }
+  )
 }
 
 resource "aws_iam_policy" "terraform_compute" {
@@ -90,9 +93,12 @@ resource "aws_iam_policy" "terraform_compute" {
   description = "Policy for Terraform compute operations"
   policy      = data.aws_iam_policy_document.terraform_compute.json
 
-  tags = {
-    Name = "terraform-compute-policy"
-  }
+  tags = merge(
+    var.common_tags,
+    {
+      Name = "terraform-compute-policy"
+    }
+  )
 }
 
 resource "aws_iam_role_policy_attachment" "terraform_compute" {

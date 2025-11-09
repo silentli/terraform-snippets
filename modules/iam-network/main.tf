@@ -75,9 +75,12 @@ resource "aws_iam_role" "terraform_network" {
   name               = "${var.project_name}-terraform-network-${var.environment}"
   assume_role_policy = data.aws_iam_policy_document.oidc_assume_role.json
 
-  tags = {
-    Name = "terraform-network-role"
-  }
+  tags = merge(
+    var.common_tags,
+    {
+      Name = "terraform-network-role"
+    }
+  )
 }
 
 resource "aws_iam_policy" "terraform_network" {
@@ -85,9 +88,12 @@ resource "aws_iam_policy" "terraform_network" {
   description = "Policy for Terraform network operations"
   policy      = data.aws_iam_policy_document.terraform_network.json
 
-  tags = {
-    Name = "terraform-network-policy"
-  }
+  tags = merge(
+    var.common_tags,
+    {
+      Name = "terraform-network-policy"
+    }
+  )
 }
 
 resource "aws_iam_role_policy_attachment" "terraform_network" {

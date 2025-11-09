@@ -6,6 +6,8 @@ terraform {
 # OIDC Provider
 module "oidc" {
   source = "../modules/oidc"
+  
+  common_tags = local.common_tags
 }
 
 # IAM Roles (Bootstrap in iam-roles.tf, Network/Compute in modules)
@@ -16,6 +18,7 @@ module "iam_network" {
   github_org        = var.github_org
   github_repo       = var.github_repo
   oidc_provider_arn = module.oidc.oidc_provider_arn
+  common_tags       = local.common_tags
 }
 
 module "iam_compute" {
@@ -25,6 +28,7 @@ module "iam_compute" {
   github_org        = var.github_org
   github_repo       = var.github_repo
   oidc_provider_arn = module.oidc.oidc_provider_arn
+  common_tags       = local.common_tags
 }
 
 # S3 Backend
@@ -37,4 +41,5 @@ module "s3_backend" {
     module.iam_network.terraform_network_role_arn,
     module.iam_compute.terraform_compute_role_arn
   ]
+  common_tags = local.common_tags
 }

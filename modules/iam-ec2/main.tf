@@ -17,9 +17,12 @@ resource "aws_iam_role" "ec2" {
   name               = "${var.project_name}-ec2-${var.environment}"
   assume_role_policy = data.aws_iam_policy_document.ec2_assume_role.json
 
-  tags = {
-    Name = "${var.project_name}-ec2-role-${var.environment}"
-  }
+  tags = merge(
+    var.common_tags,
+    {
+      Name = "${var.project_name}-ec2-role-${var.environment}"
+    }
+  )
 }
 
 # Attach managed policies if enabled
@@ -35,7 +38,10 @@ resource "aws_iam_instance_profile" "ec2" {
   name = "${var.project_name}-ec2-${var.environment}"
   role = aws_iam_role.ec2.name
 
-  tags = {
-    Name = "${var.project_name}-ec2-profile-${var.environment}"
-  }
+  tags = merge(
+    var.common_tags,
+    {
+      Name = "${var.project_name}-ec2-profile-${var.environment}"
+    }
+  )
 }

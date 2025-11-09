@@ -31,3 +31,9 @@ variable "project_name" {
   description = "Project or application name"
   type        = string
 }
+
+variable "common_tags" {
+  description = "Common tags to apply to all resources"
+  type        = map(string)
+  default     = {}
+}

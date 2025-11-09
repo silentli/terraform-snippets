@@ -43,3 +43,9 @@ variable "bucket_name" {
   type        = string
   # Example: "my-terraform-state-bucket-dev"
 }
+
+variable "additional_tags" {
+  description = "Additional tags to apply to all resources (merged with common_tags)"
+  type        = map(string)
+  default     = {}
+}
