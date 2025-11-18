@@ -41,8 +41,10 @@ resource "aws_security_group" "ec2_sg" {
   )
 }
 
-# Ingress Rule - Allow SSH
+# Ingress Rule - Allow SSH (optional)
 resource "aws_vpc_security_group_ingress_rule" "ssh" {
+  count = var.enable_ssh ? 1 : 0
+
   security_group_id = aws_security_group.ec2_sg.id
   description       = "Allow SSH"
   from_port         = 22
