@@ -13,6 +13,7 @@ variable "tag_key" {
   type        = string
 }
 
+# tflint-ignore: terraform_unused_declarations
 variable "tag_value" {
   description = "Tag value to filter costs by. Resources must be tagged with the matching tag_key and this value for the budget to track their costs"
   type        = string
