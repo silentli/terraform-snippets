@@ -13,12 +13,17 @@ NC='\033[0m' # No Color
 
 echo -e "${GREEN}Running TFLint on all Terraform directories...${NC}\n"
 
-# Directories to check
-DIRECTORIES=(
+# Determine repo root (script can be run from anywhere)
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+PROJECTS=(
   "00-bootstrap"
   "01-network"
   "02-ec2-creation"
   "cost-governance"
+)
+
+MODULES=(
   "modules/network"
   "modules/oidc"
   "modules/s3-backend"
@@ -28,49 +33,30 @@ DIRECTORIES=(
   "modules/budgets"
 )
 
-# Initialize TFLint from root (uses root .tflint.hcl)
-echo -e "${YELLOW}Initializing TFLint plugins...${NC}"
-tflint --init
+DIRECTORIES=("${PROJECTS[@]}" "${MODULES[@]}")
 
-# Run TFLint on each directory
+ROOT_CONFIG="$ROOT_DIR/.tflint.hcl"
+
+# Initialize TFLint once up front with the root config
+echo -e "${YELLOW}Initializing TFLint plugins...${NC}"
+tflint --config "$ROOT_CONFIG" --init
+
+# Run TFLint on each directory with the appropriate config
 FAILED=0
 for dir in "${DIRECTORIES[@]}"; do
-  if [ -d "$dir" ]; then
-    echo -e "\n${YELLOW}Checking $dir...${NC}"
-    # Run tflint and capture output (tflint exits non-zero if warnings found)
-    set +e  # Don't exit on error
-    OUTPUT=$(tflint --chdir="$dir" --format=default 2>&1)
-    EXIT_CODE=$?
-    set -e  # Re-enable exit on error
-    
-    # For modules, version warnings are acceptable (modules don't need versions.tf)
-    if [[ "$dir" == modules/* ]]; then
-      # Check if there are any non-version warnings
-      NON_VERSION_WARNINGS=$(echo "$OUTPUT" | grep "Warning:" | grep -vE "terraform_required_version|terraform_required_providers" | wc -l | tr -d ' ')
-      
-      if [ "$NON_VERSION_WARNINGS" -eq 0 ] && [ "$EXIT_CODE" -ne 0 ]; then
-        # Only version warnings exist, which is acceptable for modules
-        echo -e "${GREEN}✓ $dir passed (version warnings are acceptable for modules)${NC}"
-      elif [ "$EXIT_CODE" -eq 0 ]; then
-        echo -e "${GREEN}✓ $dir passed${NC}"
-      else
-        # Other warnings exist, show them
-        echo "$OUTPUT"
-        echo -e "${RED}✗ $dir failed${NC}"
-        FAILED=1
-      fi
-    else
-      # For projects, all warnings are failures
-      if [ "$EXIT_CODE" -eq 0 ]; then
-        echo -e "${GREEN}✓ $dir passed${NC}"
-      else
-        echo "$OUTPUT"
-        echo -e "${RED}✗ $dir failed${NC}"
-        FAILED=1
-      fi
-    fi
-  else
+  TARGET_DIR="$ROOT_DIR/$dir"
+
+  if [ ! -d "$TARGET_DIR" ]; then
     echo -e "${YELLOW}⚠ $dir not found, skipping...${NC}"
+    continue
+  fi
+
+  echo -e "\n${YELLOW}Checking $dir...${NC}"
+  if tflint --config "$ROOT_CONFIG" --chdir="$TARGET_DIR" --format=default; then
+    echo -e "${GREEN}✓ $dir passed${NC}"
+  else
+    echo -e "${RED}✗ $dir failed${NC}"
+    FAILED=1
   fi
 done
 

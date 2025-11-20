@@ -13,7 +13,7 @@
 
 2. **Single directory**  
    ```bash
-   tflint --chdir=00-bootstrap --format=default
+   tflint --config="$(pwd)/.tflint.hcl" --chdir=00-bootstrap --format=default
    ```
 
 3. **All directories** (preferred)  
@@ -22,12 +22,12 @@
    ```
 
 ### Script behavior
+- Uses the root `.tflint.hcl` for every directory, ensuring consistent rules
 - Projects (`00-bootstrap`, `01-network`, etc.) must pass every rule (they own `versions.tf`)
-- Modules reuse callers’ providers, so the script ignores version warnings for anything under `modules/`
+- Modules reuse callers’ providers, so version/provider rules stay disabled in the shared config
 
 ## Config Layout
-- `.tflint.hcl` (repo root): enables AWS + Terraform rulesets, enforces required providers/versions in top-level projects
-- `modules/.tflint.hcl`: extends the root config but disables `terraform_required_version` and `terraform_required_providers` so reusable modules don’t need their own `versions.tf`
+- `.tflint.hcl` (repo root): enables AWS + Terraform rulesets and configures all rules for both projects and modules
 
 ## Troubleshooting
 If TFLint complains about plugins (handshake errors, missing binaries), clear the cache and reinit:
