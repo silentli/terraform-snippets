@@ -50,4 +50,6 @@ jobs:
       # Init from root to use root .tflint.hcl config
 
     - name: TFLint Run
-      run: tflint --chdir=./${{ matrix.directory }} --format=default
+      env:
+        TFLINT_CONFIG: ${{ github.workspace }}/.tflint.hcl
+      run: tflint --config="${TFLINT_CONFIG}" --chdir=./${{ matrix.directory }} --format=default
