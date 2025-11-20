@@ -1,0 +1,53 @@
+name: 'TFLint'
+
+on:
+  pull_request:
+    branches: ['**']
+  push:
+    branches: ['**']
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'scripts/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tflint:
+    name: 'TFLint - Lint All Terraform'
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        directory:
+          - '00-bootstrap'
+          - '01-network'
+          - '02-ec2-creation'
+          - 'cost-governance'
+          - 'modules/network'
+          - 'modules/oidc'
+          - 'modules/s3-backend'
+          - 'modules/iam-network'
+          - 'modules/iam-compute'
+          - 'modules/iam-ec2'
+          - 'modules/budgets'
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: TFLint
+      uses: terraform-linters/setup-tflint@v5
+      with:
+        tflint_version: latest
+
+    - name: TFLint Init
+      run: tflint --init
+      # Init from root to use root .tflint.hcl config
+
+    - name: TFLint Run
+      run: tflint --chdir=./${{ matrix.directory }} --format=default
