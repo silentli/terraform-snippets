@@ -74,3 +74,8 @@ rule "terraform_standard_module_structure" {
 rule "terraform_workspace_remote" {
   enabled = true
 }
+
+rule "terraform_unused_required_providers" {
+  enabled = false
+  # Disabled because top-level projects declare providers for modules to use
+}
