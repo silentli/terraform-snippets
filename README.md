@@ -74,6 +74,15 @@ Copy example files and customize:
 
 See `envs/README.md` for detailed setup instructions.
 
+## Code Quality
+
+**TFLint**: Lint all Terraform code with a single command:
+```bash
+./scripts/tflint.sh
+```
+
+Uses the root `.tflint.hcl` config for consistent rules across all projects and modules. See `docs/tflint.md` for details.
+
 ## Security Features
 
 - **OIDC Authentication**: No long-lived credentials
