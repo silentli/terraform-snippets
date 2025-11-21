@@ -9,17 +9,20 @@ envs/
 ├── dev/    # Development environment
 │   ├── bootstrap.tfvars.example
 │   ├── network.tfvars.example
-│   └── ec2-compute.tfvars.example
+│   ├── ec2-compute.tfvars.example
+│   └── cost-governance.tfvars.example
 └── prod/   # Production environment
     ├── bootstrap.tfvars.example
     ├── network.tfvars.example
-    └── ec2-compute.tfvars.example
+    ├── ec2-compute.tfvars.example
+    └── cost-governance.tfvars.example
 ```
 
 Each environment contains:
 - `bootstrap.tfvars.example` - Bootstrap layer config
 - `network.tfvars.example` - Network layer config  
 - `ec2-compute.tfvars.example` - EC2 compute layer config
+- `cost-governance.tfvars.example` - AWS Budgets config (optional)
 
 ## Setup
 
@@ -41,6 +44,9 @@ Each environment contains:
    
    # EC2 Compute
    cd 02-ec2-creation && terraform apply -var-file="../envs/dev/ec2-compute.tfvars"
+
+   # (Optional) Cost Governance
+   cd cost-governance && terraform apply -var-file="../envs/dev/cost-governance.tfvars"
    ```
 
 ## Security

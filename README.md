@@ -8,6 +8,7 @@ A collection of Terraform configurations following for AWS infrastructure manage
 ├── 00-bootstrap/          # Foundation layer (OIDC, IAM, S3 backend)
 ├── 01-network/           # Network layer (VPC, subnets, routing)
 ├── 02-ec2-creation/      # Compute layer (EC2 instances)
+├── cost-governance/      # AWS Budgets for cost monitoring
 ├── modules/              # Reusable Terraform modules
 ├── envs/                 # Environment-specific variables
 └── .github/workflows/    # GitHub Actions CI/CD
@@ -31,6 +32,10 @@ A collection of Terraform configurations following for AWS infrastructure manage
 - **EC2 Instances**: Virtual machines
 - **Security Groups**: Network security
 - **Uses Network**: References network layer outputs
+
+### **Cost Governance (cost-governance)**
+- **AWS Budgets**: Tracks spend by project/environment tags
+- **Alerts**: Sends notifications to configured email recipients
 
 ## Quick Start
 
@@ -58,6 +63,14 @@ A collection of Terraform configurations following for AWS infrastructure manage
    terraform apply -var-file="../envs/dev/ec2-compute.tfvars"
    ```
 
+4. **(Optional) Deploy Cost Governance**:
+   ```bash
+   cd cost-governance
+   terraform init
+   terraform plan -var-file="../envs/dev/cost-governance.tfvars"
+   terraform apply -var-file="../envs/dev/cost-governance.tfvars"
+   ```
+
 ## GitHub Actions
 
 Workflows are configured for automated deployment:
@@ -71,8 +84,9 @@ Copy example files and customize:
 - `envs/dev/bootstrap.tfvars.example` → `envs/dev/bootstrap.tfvars`
 - `envs/dev/network.tfvars.example` → `envs/dev/network.tfvars`
 - `envs/dev/ec2-compute.tfvars.example` → `envs/dev/ec2-compute.tfvars`
+- `envs/dev/cost-governance.tfvars.example` → `envs/dev/cost-governance.tfvars`
 
-See `envs/README.md` for detailed setup instructions.
+See `envs/README.md` for detailed setup instructions, including the optional cost governance layer.
 
 ## Code Quality
 

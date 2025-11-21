@@ -1,0 +1,13 @@
+# Cost Governance - Prod Environment
+
+project_name = "terraform-snippets"
+environment  = "prod"
+
+budget_notification_email = "finance@example.com"
+default_budget_limit      = 5000
+
+additional_tags = {
+  Owner = "platform-team"
+  Tier  = "critical"
+}
+
