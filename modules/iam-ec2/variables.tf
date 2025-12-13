@@ -27,9 +27,10 @@ variable "policy_arns" {
 }
 
 variable "policies" {
-  description = "Map of customer-managed IAM policies. Key is used for resource naming, value is the policy JSON document (string) from file(). Example: { ssm = file(\"${path.module}/../../iam/ssm-policy.json\") }"
+  description = "Map of customer-managed IAM policies. Key is used for resource naming, value is the policy JSON document (string) from file()"
   type        = map(string)
   default     = {}
+  # Example: { ssm = file("${path.module}/../../iam/ssm-policy.json") }
   
   validation {
     condition = alltrue([
