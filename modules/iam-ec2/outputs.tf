@@ -17,3 +17,8 @@ output "instance_profile_arn" {
   description = "ARN of the IAM instance profile"
   value       = aws_iam_instance_profile.ec2.arn
 }
+
+output "custom_policy_arns" {
+  description = "Map of policy names to ARNs for created customer-managed policies"
+  value       = { for k, v in aws_iam_policy.custom : k => v.arn }
+}

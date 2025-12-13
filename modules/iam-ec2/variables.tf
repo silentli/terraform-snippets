@@ -8,16 +8,40 @@ variable "environment" {
   type        = string
 }
 
-variable "enable_policies" {
-  description = "Whether to attach IAM managed policies to the EC2 role"
+variable "enable_managed_policies" {
+  description = "Whether to attach AWS managed policies (policy_arns) to the EC2 role"
+  type        = bool
+  default     = false
+}
+
+variable "enable_custom_policies" {
+  description = "Whether to create and attach customer-managed policies (policies) to the EC2 role"
   type        = bool
   default     = false
 }
 
 variable "policy_arns" {
-  description = "Map of IAM policy ARNs to attach to the EC2 role. Key is used for resource naming, value is the policy ARN. Example: { ssm = \"arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore\" }"
+  description = "Map of AWS managed IAM policy ARNs to attach to the EC2 role. Key is used for resource naming, value is the policy ARN. Example: { ssm = \"arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore\" }"
   type        = map(string)
   default     = {}
+}
+
+variable "policies" {
+  description = "Map of customer-managed IAM policies. Key is used for resource naming, value is the policy JSON document (string) from file(). Example: { ssm = file(\"${path.module}/../../iam/ssm-policy.json\") }"
+  type        = map(string)
+  default     = {}
+  
+  validation {
+    condition = alltrue([
+      for k, v in var.policies : can(jsondecode(v))
+    ])
+    error_message = "Each policy value must be a valid JSON string. Use file() to load JSON policy files."
+  }
+  
+  validation {
+    condition     = var.enable_custom_policies == false || length(var.policies) > 0
+    error_message = "If custom policies are enabled (enable_custom_policies = true), you must provide at least one policy."
+  }
 }
 
 variable "common_tags" {

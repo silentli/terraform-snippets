@@ -25,12 +25,37 @@ resource "aws_iam_role" "ec2" {
   )
 }
 
-# Attach managed policies if enabled
+# Attach AWS managed policies if enabled
 resource "aws_iam_role_policy_attachment" "managed" {
-  for_each = var.enable_policies ? var.policy_arns : {}
+  for_each = var.enable_managed_policies ? var.policy_arns : {}
 
   role       = aws_iam_role.ec2.name
   policy_arn = each.value
+}
+
+# Create customer-managed policies if enabled
+resource "aws_iam_policy" "custom" {
+  for_each = var.enable_custom_policies ? var.policies : {}
+
+  name        = "${var.project_name}-${each.key}-${var.environment}"
+  description = "Custom IAM policy for ${each.key}"
+  # Policy is already a JSON string (enforced by variable type and validation)
+  policy = each.value
+
+  tags = merge(
+    var.common_tags,
+    {
+      Name = "${var.project_name}-${each.key}-policy-${var.environment}"
+    }
+  )
+}
+
+# Attach customer-managed policies to role
+resource "aws_iam_role_policy_attachment" "custom" {
+  for_each = var.enable_custom_policies ? var.policies : {}
+
+  role       = aws_iam_role.ec2.name
+  policy_arn = aws_iam_policy.custom[each.key].arn
 }
 
 # Instance Profile
