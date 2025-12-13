@@ -5,8 +5,3 @@ environment  = "dev"
 
 budget_notification_email = "team@example.com"
 default_budget_limit      = 1000
-
-additional_tags = {
-  Owner = "platform-team"
-}
-

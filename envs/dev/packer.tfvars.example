@@ -1,0 +1,6 @@
+# Packer Layer - Dev Environment
+# IAM role and instance profile for Packer AMI building
+
+# Project Configuration
+project_name = "terraform-snippets"
+environment  = "dev"

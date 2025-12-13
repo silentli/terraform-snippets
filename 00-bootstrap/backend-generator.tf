@@ -15,6 +15,7 @@ terraform {
   }
 }
 EOT
+  # path.module = current directory (00-bootstrap/), so ../01-network/ goes up one level then into 01-network
   filename = "${path.module}/../01-network/backend.tf"
 }
 
@@ -33,5 +34,6 @@ terraform {
   }
 }
 EOT
+  # path.module = current directory (00-bootstrap/), so ../02-ec2-creation/ goes up one level then into 02-ec2-creation
   filename = "${path.module}/../02-ec2-creation/backend.tf"
 }
