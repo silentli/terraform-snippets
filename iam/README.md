@@ -23,8 +23,3 @@ module "iam_ec2" {
   }
 }
 ```
-
-## Creating Custom Policies
-
-1. Create a new JSON file in this directory following AWS IAM policy format
-2. Reference it using `file()` in your Terraform code
