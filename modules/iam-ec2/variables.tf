@@ -37,11 +37,6 @@ variable "policies" {
     ])
     error_message = "Each policy value must be a valid JSON string. Use file() to load JSON policy files."
   }
-  
-  validation {
-    condition     = var.enable_custom_policies == false || length(var.policies) > 0
-    error_message = "If custom policies are enabled (enable_custom_policies = true), you must provide at least one policy."
-  }
 }
 
 variable "common_tags" {

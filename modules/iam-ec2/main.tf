@@ -31,6 +31,13 @@ resource "aws_iam_role_policy_attachment" "managed" {
 
   role       = aws_iam_role.ec2.name
   policy_arn = each.value
+
+  lifecycle {
+    precondition {
+      condition     = !var.enable_managed_policies || length(var.policy_arns) > 0
+      error_message = "If enable_managed_policies is true, at least one policy ARN must be provided in the policy_arns map."
+    }
+  }
 }
 
 # Create customer-managed policies if enabled
@@ -48,6 +55,13 @@ resource "aws_iam_policy" "custom" {
       Name = "${var.project_name}-${each.key}-policy-${var.environment}"
     }
   )
+
+  lifecycle {
+    precondition {
+      condition     = !var.enable_custom_policies || length(var.policies) > 0
+      error_message = "If enable_custom_policies is true, at least one policy must be provided in the policies map."
+    }
+  }
 }
 
 # Attach customer-managed policies to role
