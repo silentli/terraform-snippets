@@ -4,7 +4,7 @@ Minimal, reusable composite actions for Terraform workflows.
 
 ## Prerequisites
 
-**Important**: Install Terraform once in your main workflow before using these actions:
+**Important**: Install Terraform once in the main workflow before using these actions:
 
 ```yaml
 - name: Setup Terraform

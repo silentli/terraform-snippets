@@ -28,10 +28,10 @@ Each environment contains:
 
 1. **Create `.tfvars` files** (use `.example` files as reference)
 
-2. **Set your values** in the `.tfvars` files:
-   - `project_name`: Your project name
+2. **Set the values** in the `.tfvars` files:
+   - `project_name`: the project name
    - `bucket_name`: **Globally unique** S3 bucket name
-   - `github_org` & `github_repo`: Your GitHub details
+   - `github_org` & `github_repo`: the GitHub details
    - `region`: AWS region
 
 3. **Deploy in order**:

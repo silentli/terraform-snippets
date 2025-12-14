@@ -2,7 +2,7 @@
 
 ## Install
 - **macOS:** `brew install tflint`
-- **Linux:** download from the [releases page](https://github.com/terraform-linters/tflint/releases), unzip, move binary to your `$PATH`
+- **Linux:** download from the [releases page](https://github.com/terraform-linters/tflint/releases), unzip, move binary to the `$PATH`
 - Any platform: grab the latest binary from the releases page
 
 ## Run It

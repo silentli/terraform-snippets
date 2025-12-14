@@ -18,7 +18,7 @@ IAM role and instance profile for Packer to build AMIs on EC2 instances.
 
 ## Usage in Packer
 
-Use the instance profile name in your Packer configuration:
+Use the instance profile name in the Packer configuration:
 
 ```hcl
 build {

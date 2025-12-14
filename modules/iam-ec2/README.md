@@ -99,6 +99,6 @@ module "iam_ec2" {
 - Policies are only created/attached when their respective flag is `true` and the corresponding map is non-empty
 - Both types can be used together
 - Map keys are used for resource naming (e.g., `custom["ssm"]` creates policy named `{project_name}-ssm-{environment}`)
-- Policy JSON files should be placed in the `iam/` directory at the root of your project
+- Policy JSON files should be placed in the `iam/` directory at the root of the project
 - See `iam/README.md` for available policy examples and how to create custom policies
 - Variable type is `map(string)` with validation to ensure valid JSON, providing better type safety

@@ -85,4 +85,4 @@ Bootstrap (Local Backend)
 
 - **Bucket name exists**: Choose a globally unique name
 - **Insufficient permissions**: Check AWS credentials
-- **OIDC provider exists**: May already exist in your account
+- **OIDC provider exists**: May already exist in the account

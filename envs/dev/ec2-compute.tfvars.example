@@ -18,7 +18,7 @@ policy_arns = {
 
 # SSH Access (Optional - only if needed)
 # enable_ssh = true
-# key_name  = "your-key-pair-name"
+# key_name  = "the-key-pair-name"
 
 # Network State (from bootstrap output)
 network_state_bucket = "terraform-snippets-state-dev"

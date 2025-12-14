@@ -2,7 +2,7 @@
 # Terraform Backend Configuration Template
 ####
 # This is a template file for creating backend configurations
-# Copy this file to your new layer and update the key path
+# Copy this file to the new layer and update the key path
 
 terraform {
   backend "s3" {
