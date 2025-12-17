@@ -1,38 +1,36 @@
-# Packer Layer
+# Packer IAM
 
-IAM role and instance profile for Packer to build AMIs on EC2 instances.
+Creates IAM role and instance profile for Packer to build AMIs.
 
-## What It Creates
+## Variables
 
-- **IAM Role**: Role for Packer build instances with permissions to create AMIs, manage EC2 resources, and write to Parameter Store
-- **Instance Profile**: IAM instance profile that Packer build instances can use
-
-## Required Variables
-
+**Required:**
 - `project_name` - Project name for resource naming
-- `environment` - Environment (dev, staging, prod)
+- `environment` - Environment name (dev, staging, prod)
 
-## Optional Variables
+**Optional:**
+- `additional_tags` - Additional tags (default: `{}`)
 
-- `additional_tags` - Additional tags to apply to all resources. Default: `{}`
+## Usage
 
-## Usage in Packer
+Deploy with Terraform:
 
-Use the instance profile name in the Packer configuration:
+```bash
+terraform init
+terraform plan -var-file="envs/dev/packer.tfvars"
+terraform apply
+```
+
+Use the instance profile in your Packer configuration:
 
 ```hcl
 build {
-  name = "example-ami"
-  
   sources = ["source.amazon-ebs.example"]
-
-  # Use the instance profile from this layer
   iam_instance_profile = "my-project-packer-dev"
 }
 ```
 
-## Notes
+## Deployment
 
-- No dependencies - can be deployed independently
-- Uses `iam-ec2` module with `packer-policy.json`
-- Includes permissions for EC2, AMI creation, and SSM Parameter Store access
+No dependencies. Can be deployed independently.
+
