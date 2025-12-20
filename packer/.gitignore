@@ -4,6 +4,7 @@ manifest.json
 
 # Variable overrides (may contain sensitive data)
 *.pkrvars.hcl
+!*.pkrvars.hcl.example
 !variables.pkr.hcl
 
 # Logs
