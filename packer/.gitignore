@@ -1,0 +1,10 @@
+# Packer files
+manifest.json
+*.pkr.hcl.backup
+
+# Variable overrides (may contain sensitive data)
+*.pkrvars.hcl
+!variables.pkr.hcl
+
+# Logs
+*.log
