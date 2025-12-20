@@ -33,6 +33,19 @@ The `packer.pkrvars.hcl` file should contain:
 - `iam_instance_profile` - From `03-packer-iam` Terraform output
 - Other build configuration (region, instance_type, etc.)
 
+**Post-Build Step (CI/CD):**
+
+After building, write the AMI ID to SSM Parameter Store:
+
+```bash
+AMI_ID=$(jq -r '.builds[0].artifact_id' manifest.json | cut -d ':' -f 2)
+aws ssm put-parameter \
+  --name "/${PROJECT_NAME}/${ENVIRONMENT}/nginx-ami-id" \
+  --value "$AMI_ID" \
+  --type "String" \
+  --overwrite
+```
+
 ### Local Development
 
 For local testing:
