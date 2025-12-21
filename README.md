@@ -8,10 +8,12 @@ A collection of Terraform configurations following for AWS infrastructure manage
 ├── 00-bootstrap/          # Foundation layer (OIDC, IAM, S3 backend)
 ├── 01-network/           # Network layer (VPC, subnets, routing)
 ├── 02-ec2-creation/      # Compute layer (EC2 instances)
+├── 03-packer-iam/        # IAM roles for Packer AMI builds
+├── 04-nginx-ec2/         # Nginx instances (Launch Template + ASG)
 ├── cost-governance/      # AWS Budgets for cost monitoring
 ├── modules/              # Reusable Terraform modules
 ├── envs/                 # Environment-specific variables
-└── .github/workflows/    # GitHub Actions CI/CD
+└── packer/               # Packer configurations for AMI builds
 ```
 
 ## Architecture
@@ -32,6 +34,13 @@ A collection of Terraform configurations following for AWS infrastructure manage
 - **EC2 Instances**: Virtual machines
 - **Security Groups**: Network security
 - **Uses Network**: References network layer outputs
+
+### **Nginx Layer (04-nginx-ec2)**
+- **Launch Template**: EC2 launch configuration with IAM instance profile
+- **Auto Scaling Group**: Scalable instance management
+- **AMI Integration**: Uses Packer-built AMI from SSM Parameter Store
+- **Security Groups**: HTTP/HTTPS access controls
+- **Uses Network**: Deploys to private subnets
 
 ### **Cost Governance (cost-governance)**
 - **AWS Budgets**: Tracks spend by project/environment tags
@@ -63,7 +72,15 @@ A collection of Terraform configurations following for AWS infrastructure manage
    terraform apply -var-file="../envs/dev/ec2-compute.tfvars"
    ```
 
-4. **(Optional) Deploy Cost Governance**:
+4. **Deploy Nginx (after Packer AMI build)**:
+   ```bash
+   cd 04-nginx-ec2
+   terraform init
+   terraform plan -var-file="../envs/dev/nginx-ec2.tfvars"
+   terraform apply -var-file="../envs/dev/nginx-ec2.tfvars"
+   ```
+
+5. **(Optional) Deploy Cost Governance**:
    ```bash
    cd cost-governance
    terraform init
@@ -77,6 +94,7 @@ Workflows are configured for automated deployment:
 - **Bootstrap**: Foundation infrastructure
 - **Network**: VPC and networking
 - **Compute**: EC2 instances
+- **Nginx**: Launch template and ASG deployment
 
 ## Environment Files
 
@@ -84,9 +102,10 @@ Copy example files and customize:
 - `envs/dev/bootstrap.tfvars.example` → `envs/dev/bootstrap.tfvars`
 - `envs/dev/network.tfvars.example` → `envs/dev/network.tfvars`
 - `envs/dev/ec2-compute.tfvars.example` → `envs/dev/ec2-compute.tfvars`
+- `envs/dev/nginx-ec2.tfvars.example` → `envs/dev/nginx-ec2.tfvars`
 - `envs/dev/cost-governance.tfvars.example` → `envs/dev/cost-governance.tfvars`
 
-See `envs/README.md` for detailed setup instructions, including the optional cost governance layer.
+See `envs/README.md` for detailed setup instructions.
 
 ## Code Quality
 
