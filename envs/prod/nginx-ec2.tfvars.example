@@ -1,0 +1,39 @@
+# Nginx EC2 Layer - Prod Environment
+# Usage: terraform apply -var-file="envs/prod/nginx-ec2.tfvars"
+
+# Project Configuration
+project_name = "terraform-snippets"
+environment  = "prod"
+
+# Network Configuration
+network_state_bucket = "terraform-snippets-state-prod"
+aws_region          = "us-east-1"
+
+# Instance Configuration
+instance_type  = "t3.small"
+instance_name  = "nginx-instance-prod"
+
+# IAM Policies (SSM Session Manager is included by default)
+policy_arns = {
+  ssm = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+# Optional: Enable HTTPS
+# enable_https = true
+
+# Optional: Custom user_data script for nginx configuration
+# user_data = <<-EOF
+#   #!/bin/bash
+#   cat > /etc/nginx/conf.d/default.conf <<'NGINX_EOF'
+#   server {
+#       listen 80;
+#       server_name example.com;
+#       location / {
+#           proxy_pass http://backend:8080;
+#       }
+#   }
+#   NGINX_EOF
+#   nginx -t && systemctl reload nginx
+# EOF
+
+
